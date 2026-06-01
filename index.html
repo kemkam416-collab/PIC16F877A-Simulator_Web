@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>PIC16F877A Web IDE — KRIDISOFT v10 Final</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#07070e;--bg1:#0c0c18;--bg2:#101020;--bg3:#161626;--bg4:#1c1c32;
+  --br:#1f1f38;--br2:#2a2a50;
+  --tc:#e2e2f0;--tm:#8888aa;--td:#454565;
+  --green:#3ecfa0;--blue:#4d8fd6;--yellow:#e0d880;
+  --purple:#b878d6;--red:#f05555;--orange:#d4895a;
+  --cyan:#78d4f8;--lime:#aad490;
+  --accent:#4d8fd6;--accent2:#3ecfa0;
+  --LH:1.65;--EP:9px;--EF:12px;
+  --radius:8px;
+  --font-ui:'Outfit',sans-serif;
+  --font-code:'JetBrains Mono','Consolas','Courier New',monospace;
+}
+
+html,body{
+  height:100%;width:100%;
+  background:#030308;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  font-family:var(--font-ui);
+}
+
+/* ── NAVBAR ── */
+.navbar{
+  display:flex;align-items:center;
+  background:linear-gradient(90deg,#0a0a16 0%,#0e0e1e 100%);
+  border-bottom:1px solid #1e1e36;
+  padding:0 16px;height:38px;flex-shrink:0;
+  gap:12px;
+  position:relative;z-index:50;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-ui);font-size:13px;font-weight:700;
+  color:#fff;letter-spacing:.5px;white-space:nowrap;
+  text-decoration:none;
+}
+.nav-logo-icon{
+  width:24px;height:24px;border-radius:6px;
+  background:linear-gradient(135deg,var(--blue) 0%,var(--purple) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:#fff;font-weight:900;flex-shrink:0;
+}
+.nav-brand{
+  display:flex;flex-direction:column;line-height:1.1;
+}
+.nav-brand-main{font-size:12px;font-weight:700;color:#fff;letter-spacing:.8px}
+.nav-brand-sub{font-size:9px;font-weight:400;color:var(--td);letter-spacing:.5px}
+.nav-sep{width:1px;height:20px;background:var(--br);flex-shrink:0}
+.nav-chip{
+  font-family:var(--font-code);font-size:10px;color:var(--blue);
+  background:#0a1628;border:1px solid #1a3060;border-radius:5px;
+  padding:2px 8px;white-space:nowrap;letter-spacing:.3px;
+}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.nav-badge{
+  font-family:var(--font-ui);font-size:9px;font-weight:600;
+  color:var(--tm);letter-spacing:1px;text-transform:uppercase;
+  background:var(--bg2);border:1px solid var(--br);border-radius:4px;
+  padding:2px 7px;white-space:nowrap;
+}
+.nav-powered{
+  font-family:var(--font-ui);font-size:10px;color:#404060;
+  white-space:nowrap;letter-spacing:.3px;
+}
+.nav-powered span{color:var(--purple);font-weight:600}
+@media(max-width:700px){
+  .nav-brand-sub,.nav-powered,.nav-sep,.nav-chip{display:none}
+  .navbar{padding:0 10px;height:34px}
+}
+
+/* ── ROOT SHELL ── */
+.root{
+  display:flex;flex-direction:column;
+  flex:1;min-height:0;width:100%;
+  background:var(--bg0);
+  font-family:var(--font-code);
+  overflow:hidden;
+}
+
+/* ── TITLEBAR ── */
+.titlebar{
+  display:flex;align-items:center;
+  background:var(--bg2);border-bottom:1px solid var(--br);
+  flex-shrink:0;overflow-x:auto;scrollbar-width:none;
+}
+.titlebar::-webkit-scrollbar{display:none}
+.tab{
+  padding:7px 16px;font-size:11px;border-right:1px solid var(--br);
+  color:var(--td);font-family:var(--font-ui);user-select:none;
+  white-space:nowrap;flex-shrink:0;transition:color .15s;
+  letter-spacing:.2px;
+}
+.tab.a{background:var(--bg0);color:var(--blue);border-top:2px solid var(--blue)}
+@media(max-width:700px){.tab{padding:6px 10px;font-size:10px}}
+
+/* ── TOOLBAR ── */
+.toolbar{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;background:var(--bg1);
+  border-bottom:1px solid var(--br);flex-wrap:wrap;flex-shrink:0;
+}
+.tb{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:var(--radius);
+  font-size:11px;cursor:pointer;font-family:var(--font-code);
+  transition:background .15s, transform .1s, box-shadow .15s;
+  border:1px solid;user-select:none;
+  font-weight:600;letter-spacing:.2px;
+}
+.tb:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.tb:active{transform:translateY(0);box-shadow:none}
+.tb.g{border-color:var(--green);color:var(--green);background:#071a12}
+.tb.g:hover{background:#0d2b1e;box-shadow:0 4px 16px rgba(62,207,160,.2)}
+.tb.r{border-color:var(--red);color:var(--red);background:#160707}
+.tb.r:hover{background:#220f0f;box-shadow:0 4px 16px rgba(240,85,85,.2)}
+.tb.y{border-color:var(--yellow);color:var(--yellow);background:#141200}
+.tb.y:hover{background:#201c00;box-shadow:0 4px 16px rgba(224,216,128,.15)}
+.tb.p{border-color:var(--purple);color:var(--purple);background:#110814}
+.tb.p:hover{background:#1c0e22;box-shadow:0 4px 16px rgba(184,120,214,.2)}
+.tb:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+.fsz{
+  font-size:11px;color:var(--tm);
+  display:flex;align-items:center;gap:4px;
+  font-family:var(--font-ui);
+}
+.fsz button{
+  background:var(--bg3);border:1px solid var(--br);color:var(--tc);
+  width:22px;height:22px;border-radius:5px;cursor:pointer;
+  font-size:13px;display:flex;align-items:center;justify-content:center;
+  transition:background .1s,transform .1s;
+}
+.fsz button:hover{background:var(--bg4);transform:scale(1.1)}
+.spill{
+  margin-left:auto;font-size:9px;padding:3px 10px;border-radius:10px;
+  border:1px solid var(--green);color:var(--green);background:#071a12;
+  display:none;align-items:center;gap:5px;
+  animation:pulse 1.2s infinite;font-family:var(--font-ui);
+  letter-spacing:.3px;
+}
+.spill.on{display:flex}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media(max-width:700px){
+  .tb{padding:4px 8px;font-size:10px}
+  .tb .tb-lbl{display:none}
+  .fsz .fz-lbl{display:none}
+}
+
+/* ── BODY LAYOUT ── */
+.body{display:flex;flex:1;overflow:hidden;min-height:0}
+@media(max-width:700px){.body{flex-direction:column}}
+
+/* ── LEFT PANE ── */
+.lpane{display:flex;flex-direction:column;width:55%;min-width:0;overflow:hidden;flex-shrink:0}
+@media(max-width:700px){.lpane{width:100% !important;flex:1;min-height:200px}}
+@media(min-width:701px) and (max-width:1024px){.lpane{width:50%}}
+
+/* ── EDITOR WRAP ── */
+.ewrap{display:flex;overflow:hidden;position:relative;flex:1;min-height:80px}
+.lns{
+  padding:var(--EP) 0;background:var(--bg0);min-width:40px;
+  text-align:right;font-size:var(--EF);line-height:var(--LH);
+  color:var(--td);user-select:none;overflow:hidden;
+  border-right:1px solid var(--bg3);flex-shrink:0;
+  font-family:var(--font-code);
+}
+.lns div{padding:0 8px;white-space:nowrap}
+.lns div.lerr{color:var(--red);background:#1a0404;position:relative}
+.lns div.lerr::after{content:'';position:absolute;left:0;right:0;bottom:0;border-bottom:2px solid var(--red);pointer-events:none}
+
+/* ── SYNTAX HIGHLIGHT LAYER ── */
+.editor-container{position:relative;flex:1;overflow:hidden;display:flex}
+#highlight-layer{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  font-family:var(--font-code);
+  font-size:var(--EF);line-height:var(--LH);
+  padding:var(--EP) 12px;tab-size:4;white-space:pre;
+  overflow:hidden;pointer-events:none;z-index:1;
+  color:#ffffff;background:var(--bg0);
+  word-break:normal;overflow-wrap:normal;
+}
+#ced{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  background:transparent;color:#ffffff;
+  border:none;outline:none;resize:none;
+  font-family:var(--font-code);
+  font-size:var(--EF);line-height:var(--LH);
+  padding:var(--EP) 12px;tab-size:4;white-space:pre;
+  overflow:auto;caret-color:#fff;z-index:2;
+  -webkit-text-fill-color:transparent;
+}
+.err-line{
+  background:rgba(240,85,85,0.1);
+  text-decoration:underline wavy var(--red);
+  text-decoration-skip-ink:none;
+}
+
+/* ── SYNTAX TOKENS ── */
+.t-kw    {color:#569cd6;font-weight:700}
+.t-import{color:#d7a0f9;font-weight:700}
+.t-type  {color:#4ec9b0;font-weight:600}
+.t-reg   {color:#4fc1ff}
+.t-fn    {color:#dcdcaa}
+.t-num   {color:#b5cea8}
+.t-cmt   {color:#7ec872;font-style:italic}
+.t-str   {color:#f4a97f}
+.t-op    {color:#ffffff}
+.t-lbl   {color:#f0d070;font-weight:700}
+.t-seg   {color:#ffb347;font-weight:700}
+
+/* ── AUTOCOMPLETE ── */
+#ac-popup{
+  position:absolute;z-index:999;background:var(--bg3);
+  border:1px solid var(--br2);border-radius:var(--radius);
+  box-shadow:0 8px 24px #00000099;min-width:210px;max-width:280px;
+  display:none;flex-direction:column;overflow:hidden;
+  font-family:var(--font-code);font-size:11px;
+  max-height:200px;overflow-y:auto;
+}
+.ac-group{padding:3px 10px 2px;font-size:9px;color:var(--td);letter-spacing:.5px;background:var(--bg4);font-family:var(--font-ui);position:sticky;top:0}
+.ac-item{padding:5px 10px;cursor:pointer;color:var(--tc);white-space:nowrap;display:flex;align-items:center;gap:6px;transition:background .1s}
+.ac-item:hover,.ac-item.sel{background:var(--bg4);color:var(--blue)}
+.ac-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ac-dot.reg{background:var(--green)}.ac-dot.fn{background:var(--yellow)}.ac-dot.kw{background:var(--blue)}.ac-dot.bit{background:var(--cyan)}.ac-dot.var{background:var(--orange)}.ac-dot.seg{background:#ff9f43}
+.ac-type{font-size:9px;color:var(--td);margin-left:auto}
+
+/* ── RESIZERS ── */
+.h-resizer{
+  height:5px;background:var(--br);cursor:row-resize;
+  flex-shrink:0;transition:background .15s;position:relative;z-index:10;touch-action:none;
+}
+.h-resizer:hover,.h-resizer.dragging{background:var(--blue)}
+.h-resizer::after{content:'· · ·';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8px;letter-spacing:3px;color:var(--td);pointer-events:none}
+.v-resizer{
+  width:5px;background:var(--br);cursor:col-resize;
+  flex-shrink:0;transition:background .15s;position:relative;z-index:10;touch-action:none;
+}
+.v-resizer:hover,.v-resizer.dragging{background:var(--blue)}
+.v-resizer::after{content:'⋮';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--td);pointer-events:none}
+@media(max-width:700px){.v-resizer{display:none}}
+
+/* ── TERMINAL ── */
+.twrap{display:flex;flex-direction:column;height:165px;min-height:50px;background:var(--bg0);overflow:hidden;flex-shrink:0}
+@media(max-width:700px){.twrap{height:130px;min-height:40px}}
+.thdr{
+  display:flex;align-items:center;gap:6px;padding:5px 12px;
+  background:var(--bg1);border-bottom:1px solid var(--bg4);
+  cursor:pointer;font-family:var(--font-ui);user-select:none;flex-shrink:0;
+}
+.thdr .tl{font-size:10px;color:var(--blue);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.thdr .ti{font-size:10px;color:var(--td);margin-left:auto}
+.tclear{
+  font-size:9px;padding:2px 8px;border-radius:5px;
+  border:1px solid var(--br2);color:var(--tm);background:var(--bg3);
+  cursor:pointer;font-family:var(--font-code);
+  transition:background .1s,color .1s,transform .1s;
+}
+.tclear:hover{background:var(--red);color:#fff;border-color:var(--red);transform:scale(1.05)}
+.tbody{flex:1;overflow-y:auto;padding:4px 0;font-size:10.5px;line-height:1.55;font-family:var(--font-code)}
+.trow{display:flex;align-items:baseline;gap:6px;padding:2px 10px;border-bottom:1px solid #0a0a14;transition:background .1s}
+.trow:hover{background:#0d0d1e}
+.trow .tts{color:#252545;font-size:9px;flex-shrink:0;letter-spacing:.3px}
+.tbadge{font-size:8px;font-weight:700;padding:0 5px;border-radius:4px;flex-shrink:0;letter-spacing:.5px;line-height:16px}
+.tbadge.ok{background:#0a2a1e;color:var(--green);border:1px solid #1a5a3a}
+.tbadge.er{background:#2a0808;color:var(--red);border:1px solid #5a1a1a}
+.tbadge.wa{background:#2a1e00;color:var(--yellow);border:1px solid #5a4000}
+.tbadge.in{background:#071422;color:var(--blue);border:1px solid #1a3a5a}
+.trow .tmsg{flex:1;color:var(--tc);word-break:break-word}
+.trow.ok .tmsg{color:#90dfca}
+.trow.er .tmsg{color:#ff8080}
+.trow.wa .tmsg{color:#ffe080}
+.trow.in .tmsg{color:#90c0e8}
+
+/* ── RIGHT PANE ── */
+.ssec{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+@media(max-width:700px){
+  .ssec{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:var(--bg0)}
+  .ssec.mob-open{display:flex}
+}
+.shdr{
+  padding:6px 12px;background:var(--bg1);border-bottom:1px solid var(--br);
+  font-size:10px;color:var(--td);display:flex;align-items:center;gap:6px;
+  font-family:var(--font-ui);flex-shrink:0;letter-spacing:.2px;
+}
+.sbody{flex:1;overflow-y:auto;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.cwrap{display:flex;gap:6px;align-items:flex-start}
+.pcol{display:flex;flex-direction:column;gap:1px}
+.chip{
+  background:var(--bg3);border:1.5px solid var(--br2);
+  border-radius:var(--radius);padding:8px 6px;min-width:70px;
+  display:flex;flex-direction:column;align-items:center;
+}
+.cnotch{width:14px;height:6px;border-radius:0 0 7px 7px;background:var(--bg0);border:1.5px solid var(--br2);border-top:none;margin-bottom:4px}
+.cic{font-size:11px;color:var(--blue);font-weight:700}.csub{font-size:8px;color:#444;margin-top:1px;letter-spacing:1px}
+.pr{display:flex;align-items:center;gap:3px;height:20px}
+.pr.l{flex-direction:row-reverse}
+.pn{font-size:8px;color:#252545;min-width:13px;text-align:center}
+.pd{
+  width:9px;height:9px;border-radius:50%;background:#181830;
+  border:1px solid var(--br2);flex-shrink:0;
+  transition:background .15s,border-color .15s,box-shadow .15s;position:relative;
+}
+.pd.oh{background:var(--green);border-color:var(--green);box-shadow:0 0 5px var(--green)}
+.pd.ih{background:var(--blue);border-color:var(--blue);box-shadow:0 0 5px var(--blue)}
+.pd.pw{background:#882818;border-color:#aa3020;cursor:default}
+.pd.gn{background:#141424;border-color:#10101e;cursor:default}
+.pd.os{background:#5a4a10;border-color:#7a6a20;cursor:default}
+.pd.inp{cursor:pointer}.pd.inp:hover{border-color:#9cdcfe;box-shadow:0 0 4px #9cdcfe}
+.pd.out{cursor:not-allowed}
+.lock{font-size:8px;position:absolute;top:-5px;right:-5px;color:var(--red);line-height:1;pointer-events:none;opacity:.8}
+.pdir{font-size:10px;width:12px;text-align:center}
+.plbl{font-size:8.5px;color:#5a5a7a;min-width:38px;line-height:1;font-family:var(--font-code)}
+.pr.l .plbl{text-align:right}
+.rpanel{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;padding:2px 0}
+.rc{font-size:9px;background:var(--bg1);border:.5px solid var(--br);border-radius:4px;padding:2px 6px;color:var(--blue);font-family:var(--font-code)}
+.expanel{
+  background:#060610;border:1px solid var(--bg4);
+  border-radius:var(--radius);padding:8px 12px;width:100%;max-width:340px;
+}
+.ext{font-size:9px;color:#404060;margin-bottom:3px;letter-spacing:.5px;font-family:var(--font-ui);text-transform:uppercase}
+.exl{font-size:10px;color:var(--yellow);min-height:14px;font-family:var(--font-code)}
+.exv{font-size:9px;color:#606080;margin-top:2px;font-family:var(--font-code)}
+.legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;padding:2px 0}
+.leg{display:flex;align-items:center;gap:3px;font-size:9px;color:var(--td);font-family:var(--font-ui)}
+.ldot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── WORKER STATUS BADGE ── */
+.wk-badge{
+  font-size:9px;padding:2px 8px;border-radius:8px;
+  background:#071422;color:var(--blue);border:1px solid #1a3a5a;
+  font-family:var(--font-ui);display:inline-flex;align-items:center;gap:3px;margin-left:4px;
+}
+.wk-badge.busy{background:#2a0808;color:var(--red);border-color:#5a1a1a;animation:pulse 1s infinite}
+
+/* ── MOBILE BTN ── */
+#mob-chip-btn{
+  display:none;position:fixed;bottom:16px;right:16px;z-index:300;
+  background:var(--blue);color:#fff;border:none;border-radius:50%;
+  width:44px;height:44px;font-size:18px;cursor:pointer;
+  box-shadow:0 4px 16px #00000099;align-items:center;justify-content:center;
+  transition:transform .15s;
+}
+#mob-chip-btn:hover{transform:scale(1.08)}
+@media(max-width:700px){#mob-chip-btn{display:flex}}
+#mob-close-btn{display:none;background:var(--bg3);border:1px solid var(--br2);color:var(--tc);padding:5px 14px;border-radius:6px;cursor:pointer;font-family:var(--font-code);font-size:11px;margin-top:4px}
+@media(max-width:700px){#mob-close-btn{display:block}}
+
+/* ── STATUS BAR ── */
+.sbar{
+  padding:3px 12px;background:#00699e;
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;color:#fff;font-family:var(--font-ui);flex-shrink:0;
+  letter-spacing:.2px;
+}
+
+/* ── FOOTER ── */
+.footer{
+  padding:5px 14px;
+  background:linear-gradient(90deg,#06060f 0%,#0a0a1a 50%,#06060f 100%);
+  border-top:1px solid #181830;
+  text-align:center;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.fbadge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:#080618;border:1px solid #2e1a50;border-radius:var(--radius);
+  padding:3px 14px;font-family:var(--font-ui);font-size:11px;color:var(--purple);
+  letter-spacing:.3px;
+}
+.fbadge-sep{color:#2e1a50}
+.powered-txt{color:#303050;font-size:10px;font-family:var(--font-ui);letter-spacing:.5px}
+.powered-txt span{color:var(--blue);font-weight:600}
+@media(max-width:700px){.footer{display:none}}
+
+/* ── SCROLLBARS ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg0)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--br2)}
+
+/* ── EXEC LOCK ── */
+.exec-lock{
+  display:none;font-size:9px;padding:2px 8px;border-radius:8px;
+  background:#2a0808;color:var(--red);border:1px solid #5a1a1a;
+  font-family:var(--font-ui);margin-left:4px;align-items:center;gap:3px;
+}
+.exec-lock.on{display:inline-flex}
+
+/* ── 7-SEGMENT ── */
+.seg-container{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:8px 4px;width:100%;max-width:340px}
+.seg-unit{
+  background:#08080e;border:1px solid var(--br2);border-radius:var(--radius);
+  padding:10px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:92px;
+}
+.seg-unit-title{font-size:9px;color:#ff9f43;font-family:var(--font-ui);letter-spacing:.5px;font-weight:700;text-transform:uppercase}
+.seg-svg-wrap{display:flex;align-items:center;justify-content:center;background:#040409;border-radius:5px;padding:6px 8px;border:1px solid #14142a}
+.seg-pins-legend{font-size:8px;color:#404060;font-family:var(--font-code);line-height:1.6;text-align:center}
+.seg-on{fill:#ff4500;filter:drop-shadow(0 0 4px #ff4500cc)}
+.seg-off{fill:#1a0505;filter:none}
+.seg-section-hdr{
+  font-size:9px;color:#ff9f43;font-family:var(--font-ui);letter-spacing:1px;text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;padding:2px 8px;
+  border-top:1px solid #1e1830;width:100%;max-width:340px;margin-top:2px;
+}
+.seg-section-hdr::before,.seg-section-hdr::after{content:'';flex:1;height:1px;background:#2a1a40}
+
+/* ── ANALYZER BADGE (pre-run) ── */
+.analyzer-row{
+  display:none;align-items:center;gap:6px;
+  background:#100818;border:1px solid #2a0840;border-radius:var(--radius);
+  padding:4px 10px;font-family:var(--font-ui);font-size:10px;color:#c070f0;
+  animation:analyzerIn .2s ease;
+}
+@keyframes analyzerIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.analyzer-row.on{display:flex}
+.analyzer-row .a-icon{font-size:11px;animation:spin .6s linear;flex-shrink:0}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- ════ NAVBAR ════ -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">K</div>
+    <div class="nav-brand">
+      <div class="nav-brand-main">KRIDISOFT</div>
+      <div class="nav-brand-sub">Embedded IDE Studio</div>
+    </div>
+  </div>
+  <div class="nav-sep"></div>
+  <div class="nav-chip"><i class="ti ti-cpu" style="font-size:10px;margin-right:4px"></i>PIC16F877A · 4 MHz</div>
+  <div class="nav-right">
+    <span class="nav-powered">IDE Powered by <span>KRIDISOFT</span></span>
+    <div class="nav-badge">v10 Final</div>
+  </div>
+</nav>
+
+<!-- ════ IDE ROOT ════ -->
+<div class="root">
+  <div class="titlebar">
+    <div class="tab a"><i class="ti ti-file-code" style="font-size:11px;margin-right:4px"></i>main.c — mikroC</div>
+    <div class="tab"><i class="ti ti-cpu" style="font-size:11px;margin-right:4px"></i>Simulator</div>
+    <div class="tab"><i class="ti ti-terminal-2" style="font-size:11px;margin-right:4px"></i>Terminal</div>
+  </div>
+
+  <div class="toolbar">
+    <button class="tb g" id="btn-run" onclick="runSim()"><i class="ti ti-player-play"></i> <span class="tb-lbl">Run</span></button>
+    <button class="tb r" id="btn-stop" onclick="stopSim()" disabled><i class="ti ti-player-stop"></i> <span class="tb-lbl">Stop</span></button>
+    <button class="tb y" onclick="autoFix()"><i class="ti ti-wand"></i> <span class="tb-lbl">Auto-Fix</span></button>
+    <button class="tb p" onclick="resetAll()"><i class="ti ti-refresh"></i> <span class="tb-lbl">Reset</span></button>
+    <div class="fsz">
+      <span class="fz-lbl" style="color:var(--td)">A</span>
+      <button onclick="chFz(-1)">&#8722;</button>
+      <span id="fzl" style="min-width:22px;text-align:center;color:var(--tc)">12</span>
+      <button onclick="chFz(1)">+</button>
+    </div>
+    <span class="exec-lock" id="exec-lock"><i class="ti ti-lock" style="font-size:9px"></i>BUSY</span>
+    <span class="wk-badge" id="wk-badge"><i class="ti ti-cpu" style="font-size:9px"></i>Worker: idle</span>
+    <div class="spill" id="spill"><i class="ti ti-clock" style="font-size:10px"></i> Simulating&#8230;</div>
+    <div class="analyzer-row" id="analyzer-row"><i class="ti ti-scan a-icon"></i>Analyzing&#8230;</div>
+  </div>
+
+  <div class="body" id="body">
+
+    <div class="lpane" id="lpane">
+      <div class="ewrap" id="ewrap">
+        <div class="lns" id="lns"></div>
+        <div class="editor-container">
+          <div id="highlight-layer" aria-hidden="true"></div>
+          <textarea id="ced" spellcheck="false"></textarea>
+          <div id="ac-popup"></div>
+        </div>
+      </div>
+
+      <div class="h-resizer" id="h-resizer"></div>
+
+      <div class="twrap" id="twrap">
+        <div class="thdr" onclick="toggleTerm(event)">
+          <i class="ti ti-terminal-2" style="font-size:12px;color:var(--blue)"></i>
+          <span class="tl">Terminal</span>
+          <button class="tclear" onclick="clearTerm(event)">&#9003; Clear</button>
+          <span class="ti" id="ttog">&#9660; hide</span>
+        </div>
+        <div class="tbody" id="tbody"></div>
+      </div>
+    </div>
+
+    <div class="v-resizer" id="v-resizer"></div>
+
+    <div class="ssec" id="ssec">
+      <div class="shdr">
+        <i class="ti ti-circuit-board"></i>
+        <span>DIP-40 &#8212; green=Output HIGH &nbsp; blue=Input HIGH &nbsp; lock=OUTPUT</span>
+        <button id="mob-close-btn" onclick="closeMobChip()">&#x2715; Close</button>
+      </div>
+      <div class="sbody">
+        <div class="legend">
+          <div class="leg"><div class="ldot" style="background:var(--green)"></div>Output HIGH</div>
+          <div class="leg"><div class="ldot" style="background:var(--blue)"></div>Input HIGH</div>
+          <div class="leg"><div class="ldot" style="background:#181830;border:1px solid var(--br2)"></div>LOW</div>
+          <div class="leg"><i class="ti ti-lock" style="font-size:10px;color:var(--red)"></i>Locked output</div>
+        </div>
+        <div class="cwrap" id="cwrap"></div>
+        <div class="rpanel" id="rpanel"></div>
+        <div class="expanel">
+          <div class="ext">Execution Trace</div>
+          <div class="exl" id="exl">Ready</div>
+          <div class="exv" id="exv">&#8212;</div>
+        </div>
+        <div id="seg-area"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sbar">
+    <i class="ti ti-cpu"></i>
+    <span>PIC16F877A · 4 MHz · IDE v10 Final</span><span>|</span>
+    <span id="smsg">Ready &#8212; Tab=indent · Enter=validate · Ctrl+Space=IntelliSense</span>
+  </div>
+
+  <div class="footer">
+    <div class="fbadge">
+      <i class="ti ti-code" style="font-size:12px"></i>
+      تم التطوير بواسطة&nbsp;<strong>عبد الكريم راتب الكريدي</strong>
+      <span class="fbadge-sep">|</span>
+      PIC16F877A IDE v10 Final
+      <i class="ti ti-cpu" style="font-size:12px"></i>
+    </div>
+    <div class="powered-txt">IDE Powered by <span>KRIDISOFT</span></div>
+  </div>
+</div>
+
+<button id="mob-chip-btn" onclick="openMobChip()" title="Show Chip"><i class="ti ti-cpu"></i></button>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════════════════════════
+   PIN DEFINITIONS
+══════════════════════════════════════════════════════════════ */
+const PINS=[
+  {n:1,name:'MCLR',port:null,bit:null,side:'L',type:'ctrl'},
+  {n:2,name:'RA0',port:'A',bit:0,side:'L',type:'io'},{n:3,name:'RA1',port:'A',bit:1,side:'L',type:'io'},
+  {n:4,name:'RA2',port:'A',bit:2,side:'L',type:'io'},{n:5,name:'RA3',port:'A',bit:3,side:'L',type:'io'},
+  {n:6,name:'RA4',port:'A',bit:4,side:'L',type:'io'},{n:7,name:'RA5',port:'A',bit:5,side:'L',type:'io'},
+  {n:8,name:'RE0',port:'E',bit:0,side:'L',type:'io'},{n:9,name:'RE1',port:'E',bit:1,side:'L',type:'io'},
+  {n:10,name:'RE2',port:'E',bit:2,side:'L',type:'io'},
+  {n:11,name:'VDD',port:null,bit:null,side:'L',type:'pwr'},{n:12,name:'VSS',port:null,bit:null,side:'L',type:'gnd'},
+  {n:13,name:'OSC1',port:null,bit:null,side:'L',type:'osc'},{n:14,name:'OSC2',port:null,bit:null,side:'L',type:'osc'},
+  {n:15,name:'RC0',port:'C',bit:0,side:'L',type:'io'},{n:16,name:'RC1',port:'C',bit:1,side:'L',type:'io'},
+  {n:17,name:'RC2',port:'C',bit:2,side:'L',type:'io'},{n:18,name:'RC3',port:'C',bit:3,side:'L',type:'io'},
+  {n:19,name:'RD0',port:'D',bit:0,side:'L',type:'io'},{n:20,name:'RD1',port:'D',bit:1,side:'L',type:'io'},
+  {n:21,name:'RD2',port:'D',bit:2,side:'R',type:'io'},{n:22,name:'RD3',port:'D',bit:3,side:'R',type:'io'},
+  {n:23,name:'RC4',port:'C',bit:4,side:'R',type:'io'},{n:24,name:'RC5',port:'C',bit:5,side:'R',type:'io'},
+  {n:25,name:'RC6',port:'C',bit:6,side:'R',type:'io'},{n:26,name:'RC7',port:'C',bit:7,side:'R',type:'io'},
+  {n:27,name:'RD4',port:'D',bit:4,side:'R',type:'io'},{n:28,name:'RD5',port:'D',bit:5,side:'R',type:'io'},
+  {n:29,name:'RD6',port:'D',bit:6,side:'R',type:'io'},{n:30,name:'RD7',port:'D',bit:7,side:'R',type:'io'},
+  {n:31,name:'VSS',port:null,bit:null,side:'R',type:'gnd'},{n:32,name:'VDD',port:null,bit:null,side:'R',type:'pwr'},
+  {n:33,name:'RB0',port:'B',bit:0,side:'R',type:'io'},{n:34,name:'RB1',port:'B',bit:1,side:'R',type:'io'},
+  {n:35,name:'RB2',port:'B',bit:2,side:'R',type:'io'},{n:36,name:'RB3',port:'B',bit:3,side:'R',type:'io'},
+  {n:37,name:'RB4',port:'B',bit:4,side:'R',type:'io'},{n:38,name:'RB5',port:'B',bit:5,side:'R',type:'io'},
+  {n:39,name:'RB6',port:'B',bit:6,side:'R',type:'io'},{n:40,name:'RB7',port:'B',bit:7,side:'R',type:'io'},
+];
+
+const REG={TRISA:0xFF,TRISB:0xFF,TRISC:0xFF,TRISD:0xFF,TRISE:0xFF,PORTA:0,PORTB:0,PORTC:0,PORTD:0,PORTE:0};
+const LATCH={PORTA:0,PORTB:0,PORTC:0,PORTD:0,PORTE:0};
+
+let simTid=null, simRunning=false, isExecuting=false,
+    execVars={}, termOpen=true, hadDelay=false, fz=12, errorLines=new Set();
+let simWorker=null;
+let segDefs=[];
+
+/* ════════════════════════════════════════════════════════════
+   IMPORT PARSER
+════════════════════════════════════════════════════════════ */
+function parseImports(code){
+  const defs=[],errors=[];
+  const importRe=/import\s*<\s*([\w_]+)\s*>\s*\{([^}]*)\}/g;
+  let m;
+  while((m=importRe.exec(code))!==null){
+    const name=m[1].trim(),body=m[2],pins={};
+    const lineRe=/([A-G]|DP)\s*=\s*(PORT([ABCDE]))\.F(\d+)\s*;/gi;
+    let lm,valid=true;
+    while((lm=lineRe.exec(body))!==null){
+      const seg=lm[1].toUpperCase(),portReg=lm[2].toUpperCase(),portLetter=lm[3].toUpperCase(),bit=parseInt(lm[4],10);
+      if(bit<0||bit>7){errors.push('Import <'+name+'>: '+portReg+'.F'+bit+' is invalid — PIC16F877A only has F0–F7');valid=false;continue;}
+      pins[seg]={port:portLetter,bit,reg:portReg};
+    }
+    if(valid&&Object.keys(pins).length>0)defs.push({name,pins});
+    else if(Object.keys(pins).length===0&&valid)errors.push('Import <'+name+'>: no valid pin assignments found');
+  }
+  return{defs,errors};
+}
+
+/* ════════════════════════════════════════════════════════════
+   7-SEG SVG
+════════════════════════════════════════════════════════════ */
+function build7SegSVG(name){
+  const W=40,H=60,T=5,G=2;
+  function hSeg(x,y,w){return `M${x+G},${y} l${T/2},-${T/2} l${w-T},0 l${T/2},${T/2} l-${T/2},${T/2} l-${w-T},0 Z`;}
+  function vSeg(x,y,h){return `M${x},${y+G} l${T/2},-${T/2} l${T/2},${T/2} l0,${h-T} l-${T/2},${T/2} l-${T/2},-${T/2} Z`;}
+  const segments={A:hSeg(2,2,W-4),B:vSeg(W-T,3,H/2-2),C:vSeg(W-T,H/2+1,H/2-2),D:hSeg(2,H-2,W-4),E:vSeg(0,H/2+1,H/2-2),F:vSeg(0,3,H/2-2),G:hSeg(2,H/2,W-4),DP:`M${W+3},${H-4} a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0`};
+  let paths='';
+  for(const[seg,d] of Object.entries(segments))paths+=`<path id="seg_${name}_${seg}" class="seg-off" d="${d}"/>`;
+  return `<svg viewBox="0 0 ${W+12} ${H}" width="60" height="90" xmlns="http://www.w3.org/2000/svg">${paths}</svg>`;
+}
+function buildPinLegend(pins){return Object.entries(pins).map(([seg,p])=>`${seg}→PORT${p.port}.F${p.bit}`).join('  ');}
+
+function renderSegArea(){
+  const area=document.getElementById('seg-area');
+  area.innerHTML='';
+  if(!segDefs.length)return;
+  const hdr=document.createElement('div');hdr.className='seg-section-hdr';
+  hdr.innerHTML='<i class="ti ti-layout-grid" style="font-size:9px"></i>7-Segment Displays<i class="ti ti-layout-grid" style="font-size:9px"></i>';
+  area.appendChild(hdr);
+  const cont=document.createElement('div');cont.className='seg-container';area.appendChild(cont);
+  segDefs.forEach(def=>{
+    const unit=document.createElement('div');unit.className='seg-unit';unit.id='segunit_'+def.name;
+    const title=document.createElement('div');title.className='seg-unit-title';title.textContent=def.name;
+    const svgWrap=document.createElement('div');svgWrap.className='seg-svg-wrap';svgWrap.innerHTML=build7SegSVG(def.name);
+    const legend=document.createElement('div');legend.className='seg-pins-legend';legend.textContent=buildPinLegend(def.pins);
+    unit.append(title,svgWrap,legend);cont.appendChild(unit);
+  });
+}
+
+function updateSegDisplays(){
+  segDefs.forEach(def=>{
+    Object.entries(def.pins).forEach(([seg,pin])=>{
+      const el=document.getElementById('seg_'+def.name+'_'+seg);if(!el)return;
+      const portReg='PORT'+pin.port,trisReg='TRIS'+pin.port;
+      const isOut=((REG[trisReg]>>pin.bit)&1)===0;
+      const src=isOut?LATCH[portReg]:REG[portReg];
+      const isHi=((src>>pin.bit)&1)===1;
+      el.classList.remove('seg-on','seg-off');el.classList.add(isHi?'seg-on':'seg-off');
+    });
+  });
+}
+
+function stripImports(code){return code.replace(/import\s*<[\w_]+\s*>\s*\{[^}]*\}/g,'');}
+
+/* ══════════════════════════════════════════════════════════════
+   WEB WORKER
+══════════════════════════════════════════════════════════════ */
+const WORKER_SRC = `
+'use strict';
+function preprocess(code){
+  return code
+    .replace(/&lt;/g,'<').replace(/&amp;/g,'&').replace(/&gt;/g,'>')
+    .replace(/\\/\\*[\\s\\S]*?\\*\\//g,' ')
+    .replace(/\\/\\/[^\\n]*/g,'')
+    .replace(/(\\w)\\s*\\+\\+/g,'$1++').replace(/(\\w)\\s*--/g,'$1--')
+    .replace(/\\)\\s*\\{/g,'){\\n').replace(/\\}\\s*else\\s*\\{/g,'\\n}else{\\n')
+    .replace(/Delay_ms\\s*\\(\\s*/gi,'Delay_ms(').replace(/Delay_us\\s*\\(\\s*/gi,'Delay_us(')
+    .replace(/\\(\\s+/g,'(').replace(/\\s+\\)/g,')');
+}
+function tokenizeExpr(expr){
+  expr=(expr||'').trim();const tokens=[];let i=0;
+  while(i<expr.length){
+    const ch=expr[i];
+    if(/\\s/.test(ch)){i++;continue;}
+    if(ch==='('){tokens.push({type:'lparen'});i++;continue;}
+    if(ch===')'){tokens.push({type:'rparen'});i++;continue;}
+    if(/\\d/.test(ch)){
+      let j=i;
+      if(expr[j]==='0'&&(expr[j+1]==='x'||expr[j+1]==='X')){j+=2;while(j<expr.length&&/[0-9a-fA-F]/.test(expr[j]))j++;tokens.push({type:'num',val:parseInt(expr.slice(i,j),16)});}
+      else if(expr[j]==='0'&&(expr[j+1]==='b'||expr[j+1]==='B')){j+=2;while(j<expr.length&&/[01]/.test(expr[j]))j++;tokens.push({type:'num',val:parseInt(expr.slice(i+2,j),2)});}
+      else{while(j<expr.length&&/\\d/.test(expr[j]))j++;tokens.push({type:'num',val:parseInt(expr.slice(i,j),10)});}
+      i=j;continue;
+    }
+    if(/[a-zA-Z_]/.test(ch)){let j=i;while(j<expr.length&&/[\\w.]/.test(expr[j]))j++;tokens.push({type:'id',val:expr.slice(i,j)});i=j;continue;}
+    if(i+1<expr.length){const two=expr.slice(i,i+2);if(['<<','>>','<=','>=','==','!=','&&','||'].includes(two)){tokens.push({type:'op',val:two});i+=2;continue;}}
+    if('+-*/%&|^~!<>'.includes(ch)){tokens.push({type:'op',val:ch});i++;continue;}
+    i++;
+  }
+  for(let k=0;k<tokens.length;k++){
+    if(tokens[k].type==='op'&&tokens[k].val==='-'){const prev=tokens[k-1];if(!prev||prev.type==='lparen'||prev.type==='op')tokens[k].unary=true;}
+    if(tokens[k].type==='op'&&(tokens[k].val==='!'||tokens[k].val==='~'))tokens[k].unary=true;
+  }
+  return tokens;
+}
+const OP_PREC={'||':1,'&&':2,'|':3,'^':4,'&':5,'==':6,'!=':6,'<':7,'>':7,'<=':7,'>=':7,'<<':8,'>>':8,'+':9,'-':9,'*':10,'/':10,'%':10};
+function shuntingYard(tokens){
+  const out=[],ops=[];
+  for(const tok of tokens){
+    if(tok.type==='num'||tok.type==='id'){out.push(tok);continue;}
+    if(tok.type==='lparen'){ops.push(tok);continue;}
+    if(tok.type==='rparen'){while(ops.length&&ops[ops.length-1].type!=='lparen')out.push(ops.pop());if(ops.length)ops.pop();continue;}
+    if(tok.type==='op'){
+      if(tok.unary){ops.push(tok);continue;}
+      const prec=OP_PREC[tok.val]||0;
+      while(ops.length){const top=ops[ops.length-1];if(top.type==='lparen')break;const topPrec=OP_PREC[top.val]||0;if(topPrec>prec||(topPrec===prec)){out.push(ops.pop());}else break;}
+      ops.push(tok);
+    }
+  }
+  while(ops.length)out.push(ops.pop());return out;
+}
+function evalRPN(rpn,reg,execVars,vars){
+  const stack=[];
+  for(const tok of rpn){
+    if(tok.type==='num'){stack.push(tok.val);continue;}
+    if(tok.type==='id'){
+      const id=tok.val,pm=id.match(/^(PORT[ABCDE])\\.F(\\d+)$/i);
+      if(pm){stack.push((reg[pm[1].toUpperCase()]>>(+pm[2]))&1);continue;}
+      if(vars&&vars[id]!==undefined){stack.push(vars[id]);continue;}
+      if(execVars[id]!==undefined){stack.push(execVars[id]);continue;}
+      if(reg[id.toUpperCase()]!==undefined){stack.push(reg[id.toUpperCase()]);continue;}
+      stack.push(0);continue;
+    }
+    if(tok.type==='op'){
+      if(tok.unary){const a=stack.pop()??0;if(tok.val==='-')stack.push(-a);else if(tok.val==='!')stack.push(a===0?1:0);else if(tok.val==='~')stack.push(~a&0xFF);continue;}
+      const b=stack.pop()??0,a=stack.pop()??0;
+      switch(tok.val){case'+':stack.push(a+b);break;case'-':stack.push(a-b);break;case'*':stack.push(a*b);break;case'/':stack.push(b?Math.floor(a/b):0);break;case'%':stack.push(b?a%b:0);break;case'<<':stack.push(a<<b);break;case'>>':stack.push(a>>b);break;case'&':stack.push(a&b);break;case'|':stack.push(a|b);break;case'^':stack.push(a^b);break;case'<':stack.push(a<b?1:0);break;case'>':stack.push(a>b?1:0);break;case'<=':stack.push(a<=b?1:0);break;case'>=':stack.push(a>=b?1:0);break;case'==':stack.push(a===b?1:0);break;case'!=':stack.push(a!==b?1:0);break;case'&&':stack.push((a&&b)?1:0);break;case'||':stack.push((a||b)?1:0);break;default:stack.push(0);}
+    }
+  }
+  return stack[0]??0;
+}
+function evalExpr(expr,reg,execVars,vars){try{return evalRPN(shuntingYard(tokenizeExpr(expr)),reg,execVars,vars);}catch(e){return 0;}}
+function extractBlock(lines,startIdx){
+  let depth=1,body=[],i=startIdx;
+  while(i<lines.length){
+    const ln=lines[i],opens=(ln.match(/\\{/g)||[]).length,closes=(ln.match(/\\}/g)||[]).length;
+    depth+=opens-closes;if(depth<=0){i++;break;}
+    const stripped=ln.replace(/^\\{$/,'').replace(/^\\}$/,'').trim();if(stripped)body.push(stripped);i++;
+  }
+  return{body,next:i};
+}
+function tokenize(code){
+  const raw=preprocess(code);
+  const lines=raw.split('\\n').map(l=>l.trim()).filter(l=>l&&!/^\\/\\//.test(l));
+  const stmts=[];let i=0;
+  while(i<lines.length){
+    const ln=lines[i];let m;
+    m=ln.match(/^for\\(\\s*(?:(?:int|char|unsigned)\\s+)?(\\w+)\\s*=\\s*(-?\\d+)\\s*;\\s*\\1\\s*([<>]=?|[!=]=)\\s*(-?\\d+)\\s*;\\s*\\1\\s*(\\+\\+|--)\\s*\\)\\{?$/);
+    if(m){i++;const ex=extractBlock(lines,i);i=ex.next;stmts.push({type:'for',vn:m[1],init:+m[2],op:m[3],lim:+m[4],inc:m[5]==='++',body:tokenize(ex.body.join('\\n'))});continue;}
+    m=ln.match(/^if\\((.+?)\\)\\{?$/);
+    if(m){i++;const exT=extractBlock(lines,i);i=exT.next;let fb=[];if(i<lines.length&&(lines[i].match(/^\\}?else\\{?$/)||lines[i].match(/^else\\{?$/))){i++;const exF=extractBlock(lines,i);i=exF.next;fb=exF.body;}stmts.push({type:'if',cond:m[1],tb:tokenize(exT.body.join('\\n')),fb:tokenize(fb.join('\\n'))});continue;}
+    m=ln.match(/^((?:PORT|TRIS)[ABCDE])\\.F(\\d+)\\s*=\\s*(.+?);$/i);if(m){stmts.push({type:'bitset',reg:m[1].toUpperCase(),bit:+m[2],rhs:m[3].trim()});i++;continue;}
+    m=ln.match(/^(TRIS[ABCDE])\\s*=\\s*(.+?);$/i);if(m){stmts.push({type:'reg',reg:m[1].toUpperCase(),val:m[2].trim()});i++;continue;}
+    m=ln.match(/^(PORT[ABCDE])\\s*=\\s*(.+?);$/i);if(m){stmts.push({type:'reg',reg:m[1].toUpperCase(),val:m[2].trim()});i++;continue;}
+    m=ln.match(/^Delay_ms\\((.+?)\\)/i);if(m){stmts.push({type:'delay',ms:Math.min(evalExpr(m[1],{},{},{})??150,2000)});i++;continue;}
+    m=ln.match(/^Delay_us\\((.+?)\\)/i);if(m){stmts.push({type:'delay',ms:Math.max(5,Math.min(Math.ceil((evalExpr(m[1],{},{},{})??500)/500),100))});i++;continue;}
+    m=ln.match(/^(\\w+):$/);if(m){stmts.push({type:'label',name:m[1]});i++;continue;}
+    m=ln.match(/^goto\\s+(\\w+);$/);if(m){stmts.push({type:'goto',label:m[1]});i++;continue;}
+    m=ln.match(/^(?:int|char|unsigned(?:\\s+char)?)\\s+(\\w+)\\s*=\\s*(.+?);$/i);if(m){stmts.push({type:'vardecl',vn:m[1],val:m[2].trim()});i++;continue;}
+    m=ln.match(/^(\\w+)\\s*=\\s*(.+?);$/);if(m&&!/^(PORT|TRIS)/i.test(m[1])){stmts.push({type:'varassign',vn:m[1],val:m[2].trim()});i++;continue;}
+    i++;
+  }
+  return stmts;
+}
+let wReg={TRISA:0xFF,TRISB:0xFF,TRISC:0xFF,TRISD:0xFF,TRISE:0xFF,PORTA:0,PORTB:0,PORTC:0,PORTD:0,PORTE:0};
+let wLatch={PORTA:0,PORTB:0,PORTC:0,PORTD:0,PORTE:0};
+let wExecVars={},wRunning=false,wHadDelay=false;
+function wPost(type,data){self.postMessage({type,...data});}
+function applyReg(regName,val){val=val&0xFF;wReg[regName]=val;if(regName.startsWith('PORT'))wLatch[regName]=val;}
+function execStep(stmts,vars,top,done){
+  if(!wRunning){done();return;}if(!stmts.length){done();return;}
+  const s=stmts[0],rest=stmts.slice(1),scope=Object.assign({},wExecVars,vars);
+  if(s.type==='reg'){const v=evalExpr(s.val,wReg,wExecVars,scope)&0xFF;applyReg(s.reg,v);wPost('reg',{reg:s.reg,val:v,regs:Object.assign({},wReg),latch:Object.assign({},wLatch)});setTimeout(()=>execStep(rest,vars,top,done),0);}
+  else if(s.type==='bitset'){const v=evalExpr(s.rhs,wReg,wExecVars,scope),bit=s.bit&7;if(v!==0)wReg[s.reg]|=(1<<bit);else wReg[s.reg]&=~(1<<bit);wReg[s.reg]&=0xFF;if(s.reg.startsWith('PORT'))wLatch[s.reg]=wReg[s.reg];wPost('bitset',{reg:s.reg,bit,val:v,regs:Object.assign({},wReg),latch:Object.assign({},wLatch)});setTimeout(()=>execStep(rest,vars,top,done),0);}
+  else if(s.type==='delay'){wHadDelay=true;setTimeout(()=>{if(wRunning)execStep(rest,vars,top,done);},s.ms);}
+  else if(s.type==='for'){wPost('trace',{line:'for('+s.vn+'='+s.init+'; '+s.vn+s.op+s.lim+'; '+s.vn+(s.inc?'++':'--')+')',varInfo:''});let iv=s.init;function nxt(){if(!wRunning){done();return;}const ok=s.op==='<'?iv<s.lim:s.op==='<='?iv<=s.lim:s.op==='>'?iv>s.lim:s.op==='>='?iv>=s.lim:s.op==='!='?iv!==s.lim:false;if(!ok){execStep(rest,vars,top,done);return;}wExecVars[s.vn]=iv;const loopVars=Object.assign({},vars,{[s.vn]:iv});wPost('trace',{line:'for('+s.vn+'='+s.init+'..)',varInfo:s.vn+' = '+iv+' ('+s.op+s.lim+')'});execStep(JSON.parse(JSON.stringify(s.body)),loopVars,top,()=>{iv=s.inc?iv+1:iv-1;setTimeout(nxt,4);});}nxt();}
+  else if(s.type==='if'){const br=evalExpr(s.cond,wReg,wExecVars,scope)!==0;wPost('trace',{line:'if('+s.cond+') -> '+(br?'TRUE':'FALSE'),varInfo:''});execStep(JSON.parse(JSON.stringify(br?s.tb:s.fb)),vars,top,()=>execStep(rest,vars,top,done));}
+  else if(s.type==='vardecl'||s.type==='varassign'){const v=evalExpr(s.val,wReg,wExecVars,scope);wExecVars[s.vn]=v;const newVars=Object.assign({},vars,{[s.vn]:v});wPost('trace',{line:(s.type==='vardecl'?'var ':'assign ')+s.vn+' = '+v,varInfo:s.vn+' = '+v});setTimeout(()=>execStep(rest,newVars,top,done),0);}
+  else if(s.type==='label'){execStep(rest,vars,top,done);}
+  else if(s.type==='goto'){if(!wHadDelay){setTimeout(()=>{if(wRunning){wHadDelay=false;execStep(JSON.parse(JSON.stringify(top)),vars,top,done);}},50);}else{wHadDelay=false;setTimeout(()=>{if(wRunning)execStep(JSON.parse(JSON.stringify(top)),vars,top,done);},8);}}
+  else{execStep(rest,vars,top,done);}
+}
+self.onmessage=function(e){
+  const msg=e.data;
+  if(msg.type==='start'){wReg=Object.assign({},msg.reg);wLatch=Object.assign({},msg.latch);wExecVars={};wHadDelay=false;wRunning=true;const stmts=tokenize(msg.code);if(!stmts.length){wPost('error',{msg:'No executable statements'});wPost('stopped',{});return;}wPost('started',{count:stmts.length});function loop(){if(wRunning)execStep(JSON.parse(JSON.stringify(stmts)),{},stmts,()=>{if(wRunning)setTimeout(loop,10);});}loop();}
+  if(msg.type==='stop'){wRunning=false;wPost('stopped',{});}
+  if(msg.type==='pin_input'){const{port,bit,val}=msg;const reg='PORT'+port;if((wReg['TRIS'+port]>>bit)&1){if(val)wReg[reg]|=(1<<bit);else wReg[reg]&=~(1<<bit);wReg[reg]&=0xFF;}}
+};
+`;
+
+function createWorker(){
+  const blob=new Blob([WORKER_SRC],{type:'application/javascript'});
+  const url=URL.createObjectURL(blob);
+  simWorker=new Worker(url);
+  simWorker.onmessage=handleWorkerMsg;
+  simWorker.onerror=function(e){tlog('Worker error: '+e.message,'er');stopSim();};
+  setWkBadge(false);
+}
+
+function setWkBadge(busy){
+  const b=document.getElementById('wk-badge');if(!b)return;
+  b.className='wk-badge'+(busy?' busy':'');
+  b.innerHTML='<i class="ti ti-cpu" style="font-size:9px"></i> Worker: '+(busy?'running':'idle');
+}
+
+function handleWorkerMsg(e){
+  const msg=e.data;
+  if(msg.type==='started'){tlog('Worker parsed '+msg.count+' top-level statements','in');setStatus('Running...');}
+  if(msg.type==='reg'){Object.assign(REG,msg.regs);Object.assign(LATCH,msg.latch);setExLine(msg.reg+' = 0x'+msg.val.toString(16).toUpperCase().padStart(2,'0'));tlog(msg.reg+' := 0b'+msg.val.toString(2).padStart(8,'0')+'  (0x'+msg.val.toString(16).toUpperCase().padStart(2,'0')+')','ok');updatePins();updateSegDisplays();}
+  if(msg.type==='bitset'){Object.assign(REG,msg.regs);Object.assign(LATCH,msg.latch);setExLine(msg.reg+'.F'+msg.bit+' = '+msg.val);tlog(msg.reg+'.F'+msg.bit+' := '+msg.val+' -> '+msg.reg+'=0b'+REG[msg.reg].toString(2).padStart(8,'0'),'ok');updatePins();updateSegDisplays();}
+  if(msg.type==='trace'){setExLine(msg.line);if(msg.varInfo)setExVar(msg.varInfo);}
+  if(msg.type==='error'){tlog(msg.msg,'er');stopSim();}
+  if(msg.type==='stopped'){simRunning=false;setExecLock(false);execVars={};hadDelay=false;document.getElementById('btn-run').disabled=false;document.getElementById('btn-stop').disabled=true;document.getElementById('spill').classList.remove('on');setWkBadge(false);setStatus('Stopped');setExLine('Stopped');setExVar('\u2014');tlog('Simulation stopped','wa');}
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INTELLISENSE
+══════════════════════════════════════════════════════════════ */
+const AC_MAP={
+  keyword:[{w:'void main()',t:'kw'},{w:'for',t:'kw'},{w:'if',t:'kw'},{w:'else',t:'kw'},{w:'goto',t:'kw'},{w:'while',t:'kw'},{w:'return',t:'kw'},{w:'import',t:'kw'}],
+  type:[{w:'int',t:'kw'},{w:'char',t:'kw'},{w:'unsigned',t:'kw'},{w:'unsigned char',t:'kw'}],
+  register:[{w:'PORTA',t:'reg'},{w:'PORTB',t:'reg'},{w:'PORTC',t:'reg'},{w:'PORTD',t:'reg'},{w:'PORTE',t:'reg'},{w:'TRISA',t:'reg'},{w:'TRISB',t:'reg'},{w:'TRISC',t:'reg'},{w:'TRISD',t:'reg'},{w:'TRISE',t:'reg'}],
+  fn:[{w:'Delay_ms()',t:'fn'},{w:'Delay_us()',t:'fn'}],
+  bit:[...['A','B','C','D','E'].flatMap(p=>[0,1,2,3,4,5,6,7].map(b=>({w:`PORT${p}.F${b}`,t:'bit'}))),
+       ...['A','B','C','D','E'].flatMap(p=>[0,1,2,3,4,5,6,7].map(b=>({w:`TRIS${p}.F${b}`,t:'bit'})))]
+};
+let acIdx=0,acActive=false,acPrefix='',acFlatMatches=[];
+
+/* ══════════════════════════════════════════════════════════════
+   TERMINAL
+══════════════════════════════════════════════════════════════ */
+const BADGE={ok:'SUCCESS',er:'ERROR',wa:'WARN',in:'INFO'};
+function tlog(msg,cls){
+  const tb=document.getElementById('tbody');
+  const ts=new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const row=document.createElement('div');row.className='trow '+(cls||'in');
+  const tts=document.createElement('span');tts.className='tts';tts.textContent=ts;
+  const badge=document.createElement('span');badge.className='tbadge '+(cls||'in');badge.textContent=BADGE[cls]||'INFO';
+  const msgEl=document.createElement('span');msgEl.className='tmsg';msgEl.textContent=msg;
+  row.append(tts,badge,msgEl);tb.appendChild(row);tb.scrollTop=tb.scrollHeight;
+}
+function clearTerm(e){if(e)e.stopPropagation();document.getElementById('tbody').innerHTML='';}
+function toggleTerm(e){
+  const tb=document.getElementById('tbody'),lbl=document.getElementById('ttog');
+  termOpen=!termOpen;tb.style.display=termOpen?'':'none';
+  lbl.textContent=termOpen?'\u25bc hide':'\u25b6 show';
+}
+function setStatus(t){const e=document.getElementById('smsg');if(e)e.textContent=t;}
+function setExLine(t){const e=document.getElementById('exl');if(e)e.textContent=t;}
+function setExVar(t){const e=document.getElementById('exv');if(e)e.textContent=t;}
+
+/* ══════════════════════════════════════════════════════════════
+   FONT SIZE
+══════════════════════════════════════════════════════════════ */
+function chFz(d){
+  fz=Math.min(18,Math.max(9,fz+d));
+  const ced=document.getElementById('ced'),lns=document.getElementById('lns'),hl=document.getElementById('highlight-layer');
+  ced.style.fontSize=fz+'px';lns.style.fontSize=fz+'px';hl.style.fontSize=fz+'px';
+  document.documentElement.style.setProperty('--EF',fz+'px');
+  document.getElementById('fzl').textContent=fz;
+  updateLN();updateHighlight();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LINE NUMBERS & ERROR MARKING
+══════════════════════════════════════════════════════════════ */
+function updateLN(){
+  const ta=document.getElementById('ced'),ln=document.getElementById('lns');
+  ln.innerHTML=ta.value.split('\n').map((_,i)=>{
+    const n=i+1;
+    return errorLines.has(n)?`<div class="lerr" title="Error on line ${n}">${n}</div>`:`<div>${n}</div>`;
+  }).join('');
+  ln.scrollTop=ta.scrollTop;
+}
+function syncLNScroll(){
+  const ta=document.getElementById('ced'),ln=document.getElementById('lns'),hl=document.getElementById('highlight-layer');
+  ln.scrollTop=ta.scrollTop;hl.scrollTop=ta.scrollTop;hl.scrollLeft=ta.scrollLeft;
+}
+function markErrorLines(nums){errorLines=new Set(nums);updateLN();updateHighlight();}
+function clearErrorLines(){if(!errorLines.size)return;errorLines=new Set();updateLN();updateHighlight();}
+
+/* ══════════════════════════════════════════════════════════════
+   SYNTAX HIGHLIGHTING
+══════════════════════════════════════════════════════════════ */
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function tokenizeLine(line){
+  let out='',i=0;const len=line.length;
+  while(i<len){
+    if(line[i]==='/'&&line[i+1]==='/'){out+=`<span class="t-cmt">${escHtml(line.slice(i))}</span>`;i=len;continue;}
+    if(line[i]==='"'){let j=i+1;while(j<len&&line[j]!=='"')j++;out+=`<span class="t-str">${escHtml(line.slice(i,j+1))}</span>`;i=j+1;continue;}
+    if(/\d/.test(line[i])||(line[i]==='-'&&/\d/.test(line[i+1]||'')&&(i===0||/[\s(,=+\-*\/&|^<>!]/.test(line[i-1])))){
+      let j=i;if(line[j]==='-')j++;
+      if(line[j]==='0'&&(line[j+1]==='x'||line[j+1]==='X')){j+=2;while(j<len&&/[0-9a-fA-F]/.test(line[j]))j++;}
+      else if(line[j]==='0'&&(line[j+1]==='b'||line[j+1]==='B')){j+=2;while(j<len&&/[01]/.test(line[j]))j++;}
+      else{while(j<len&&/\d/.test(line[j]))j++;}
+      out+=`<span class="t-num">${escHtml(line.slice(i,j))}</span>`;i=j;continue;
+    }
+    if(line[i]==='<'||line[i]==='>'||line[i]==='{'){out+=`<span class="t-op">${escHtml(line[i])}</span>`;i++;continue;}
+    if(/[a-zA-Z_]/.test(line[i])){
+      let j=i;while(j<len&&/[\w.]/.test(line[j]))j++;
+      const word=line.slice(i,j);
+      if(word==='import'){out+=`<span class="t-import">${escHtml(word)}</span>`;i=j;continue;}
+      if(/^7segment_?\d*$/i.test(word)||(/^[\w_]+segment/.test(word))){out+=`<span class="t-seg">${escHtml(word)}</span>`;i=j;continue;}
+      if(/^(A|B|C|D|E|F|G|DP)$/.test(word)&&j<len&&/\s*=/.test(line.slice(j,j+3))){out+=`<span class="t-fn">${escHtml(word)}</span>`;i=j;continue;}
+      if(/^(PORT|TRIS)[ABCDE](\.\w+)?$/i.test(word)){
+        if(word.includes('.')){const[reg,bit]=word.split('.');out+=`<span class="t-reg">${escHtml(reg)}</span><span class="t-op">.</span><span class="t-fn">${escHtml(bit)}</span>`;}
+        else{out+=`<span class="t-reg">${escHtml(word)}</span>`;}
+        i=j;continue;
+      }
+      if(/^(void|main|while|if|else|for|goto|return|break|continue)$/.test(word)){out+=`<span class="t-kw">${escHtml(word)}</span>`;i=j;continue;}
+      if(/^(int|char|unsigned|long|short|float|double)$/.test(word)){out+=`<span class="t-type">${escHtml(word)}</span>`;i=j;continue;}
+      if(/^Delay_(ms|us)$/.test(word)){out+=`<span class="t-fn">${escHtml(word)}</span>`;i=j;continue;}
+      if(j<len&&line[j]===':'&&(j+1>=len||line[j+1]!==':')){out+=`<span class="t-lbl">${escHtml(word)}:</span>`;i=j+1;continue;}
+      out+=`<span style="color:#ffffff">${escHtml(word)}</span>`;i=j;continue;
+    }
+    if(/[+\-*\/=<>!&|^~%();,\[\]{}]/.test(line[i])){out+=`<span class="t-op">${escHtml(line[i])}</span>`;i++;continue;}
+    out+=`<span style="color:#ffffff">${escHtml(line[i])}</span>`;i++;
+  }
+  return out;
+}
+function updateHighlight(){
+  const ta=document.getElementById('ced'),hl=document.getElementById('highlight-layer');
+  const raw=ta.value.replace(/&lt;/g,'<').replace(/&amp;/g,'&').replace(/&gt;/g,'>');
+  const lines=raw.split('\n');let inBlock=false;
+  const html=lines.map((line,idx)=>{
+    const lineNum=idx+1,isErr=errorLines.has(lineNum);let lineHtml='';
+    if(inBlock){const end=line.indexOf('*/');if(end===-1){lineHtml=`<span class="t-cmt">${escHtml(line)}</span>`;}else{inBlock=false;lineHtml=`<span class="t-cmt">${escHtml(line.slice(0,end+2))}</span>`+tokenizeLine(line.slice(end+2));}}
+    else{const bs=line.indexOf('/*');if(bs!==-1){const be=line.indexOf('*/',bs+2);if(be===-1){inBlock=true;lineHtml=tokenizeLine(line.slice(0,bs))+`<span class="t-cmt">${escHtml(line.slice(bs))}</span>`;}else{lineHtml=tokenizeLine(line.slice(0,bs))+`<span class="t-cmt">${escHtml(line.slice(bs,be+2))}</span>`+tokenizeLine(line.slice(be+2));}}else{lineHtml=tokenizeLine(line);}}
+    if(isErr)return `<span class="err-line">${lineHtml||' '}</span>`;
+    return lineHtml;
+  }).join('\n');
+  hl.innerHTML=html+'\n';
+  hl.scrollTop=ta.scrollTop;hl.scrollLeft=ta.scrollLeft;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INLINE VALIDATOR (on Enter)
+══════════════════════════════════════════════════════════════ */
+const NEED_SEMI=/^(PORT[ABCDE]|TRIS[ABCDE]|Delay_ms|Delay_us|goto|PORT[ABCDE]\.F)/i;
+const LOWER_REGS=/\b(port[abcde]|tris[abcde])\b/;
+function validateLine(ln){
+  const stripped=ln.replace(/\/\/[^\n]*/,'').trimEnd(),s=stripped.trim();
+  if(!s||s.startsWith('//')||s.startsWith('/*')||s.startsWith('*'))return;
+  if(s.endsWith('{')||s.endsWith('}')||/^\w+:$/.test(s))return;
+  if(/^(void|for|if|else|int|char|unsigned|import)/.test(s))return;
+  if(NEED_SEMI.test(s)&&!s.endsWith(';'))tlog('Missing semicolon: "'+s.substring(0,40)+'"','wa');
+  const lo=s.match(LOWER_REGS);if(lo)tlog('Casing: "'+lo[0]+'" should be '+lo[0].toUpperCase(),'er');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PRE-RUN STATIC ANALYZER — validateCode (v10 Final)
+   Checks:
+   1. Import block validity (via parseImports)
+   2. Brace balance { }
+   3. Paren balance ( )
+   4. Hardware limits: PORT letter must be A-E, bit F0-F7 only
+   5. void main() presence
+   6. Empty import blocks
+   7. Missing semicolons & lowercase registers
+══════════════════════════════════════════════════════════════ */
+function preprocess_local(code){
+  const stripped=code.replace(/import\s*<[\w_]+\s*>\s*\{[^}]*\}/g,'');
+  return stripped
+    .replace(/&lt;/g,'<').replace(/&amp;/g,'&').replace(/&gt;/g,'>')
+    .replace(/\/\*[\s\S]*?\*\//g,' ')
+    .replace(/\/\/[^\n]*/g,'')
+    .replace(/(\w)\s*\+\+/g,'$1++').replace(/(\w)\s*--/g,'$1--')
+    .replace(/\)\s*\{/g,'){\n').replace(/\}\s*else\s*\{/g,'\n}else{\n')
+    .replace(/Delay_ms\s*\(\s*/gi,'Delay_ms(').replace(/Delay_us\s*\(\s*/gi,'Delay_us(')
+    .replace(/\(\s+/g,'(').replace(/\s+\)/g,')');
+}
+
+function validateCode(rawCode){
+  const errs=[];
+
+  // 1. Import parser validation
+  const {defs,errors:importErrors}=parseImports(rawCode);
+  importErrors.forEach(msg=>errs.push({msg,line:null}));
+
+  // Strip comments for clean analysis
+  const noComments=rawCode
+    .replace(/\/\*[\s\S]*?\*\//g,m=>'\n'.repeat((m.match(/\n/g)||[]).length))
+    .replace(/\/\/[^\n]*/g,'');
+
+  // 2. Brace balance check (excluding imports)
+  const pre=preprocess_local(rawCode);
+  const opens=(pre.match(/\{/g)||[]).length,closes=(pre.match(/\}/g)||[]).length;
+  if(opens!==closes)errs.push({msg:'Mismatched braces: '+opens+' { vs '+closes+' } — check your block structure',line:null});
+
+  // 3. Paren balance check
+  let pDepth=0;
+  const noStr=noComments.replace(/"[^"]*"/g,'""');
+  for(let ci=0;ci<noStr.length;ci++){
+    if(noStr[ci]==='(')pDepth++;
+    else if(noStr[ci]===')')pDepth--;
+    if(pDepth<0){errs.push({msg:'Unexpected ) — unmatched closing parenthesis',line:null});break;}
+  }
+  if(pDepth>0)errs.push({msg:'Unmatched ( — '+pDepth+' parenthesis(es) never closed',line:null});
+
+  // 4. void main() presence (after stripping imports and comments)
+  const codeBody=noComments.replace(/import\s*<[\w_]+\s*>\s*\{[^}]*\}/g,'');
+  if(!/void\s+main\s*\(\s*\)/.test(codeBody))
+    errs.push({msg:'Missing "void main()" — entry point not found',line:null});
+
+  // 5. Hardware limits: PORT[X].F[N] — X must be A-E, N must be 0-7
+  // Also catches bad PORT letters in inline code (not inside import blocks which are checked by parseImports)
+  const inlineCode=noComments.replace(/import\s*<[\w_]+\s*>\s*\{[^}]*\}/g,'');
+  const hwRe=/\b(PORT|TRIS)([A-Za-z])\.F(\d+)\b/g;
+  let hwM;
+  while((hwM=hwRe.exec(inlineCode))!==null){
+    const prefix=hwM[1].toUpperCase(),letter=hwM[2].toUpperCase(),bitN=parseInt(hwM[3],10);
+    // Find approximate line
+    const upToMatch=inlineCode.slice(0,hwM.index);
+    const lineNum=upToMatch.split('\n').length;
+    if(!/^[ABCDE]$/.test(letter)){
+      errs.push({msg:`Invalid PORT: "${prefix+letter}" — PIC16F877A only has PORT A, B, C, D, E`,line:lineNum});
+    } else if(bitN<0||bitN>7){
+      errs.push({msg:`Invalid bit: "${prefix+letter}.F${bitN}" — PIC16F877A only has F0–F7`,line:lineNum});
+    }
+  }
+
+  // 6. Missing semicolons & lowercase registers (line-by-line)
+  noComments.split('\n').forEach((raw,idx)=>{
+    const lineNum=idx+1,l=raw.trim();
+    if(!l)return;
+    if(l.endsWith('{')||l.endsWith('}')||/^\w+:$/.test(l))return;
+    if(/^(void|for|if|else|\/|\*|import)/.test(l))return;
+    if(/^(int|char|unsigned)/.test(l))return;
+    if(NEED_SEMI.test(l)&&!l.endsWith(';'))errs.push({msg:'Missing semicolon: "'+l.substring(0,30)+'"',line:lineNum});
+    const lo=l.match(LOWER_REGS);
+    if(lo)errs.push({msg:'Lowercase register: "'+lo[0]+'" → use '+lo[0].toUpperCase(),line:lineNum});
+  });
+
+  return errs;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INTELLISENSE HELPERS
+══════════════════════════════════════════════════════════════ */
+function getWordBefore(ta){const pos=ta.selectionStart,val=ta.value;let i=pos-1;while(i>=0&&/[\w.]/.test(val[i]))i--;return val.slice(i+1,pos);}
+function getContext(ta){
+  const pos=ta.selectionStart,val=ta.value;
+  const lineStart=val.lastIndexOf('\n',pos-1)+1,lineText=val.slice(lineStart,pos).trim();
+  if(/^(int|char|unsigned)\s*$/.test(lineText))return'decl';
+  if(/^(if|for|while)\s*\(/.test(lineText))return'condition';
+  if(/=\s*$/.test(lineText))return'assign';
+  if(!lineText)return'start';
+  return'stmt';
+}
+function getUserVars(){
+  const code=document.getElementById('ced').value,vars=[],re=/(?:int|char|unsigned(?:\s+char)?)\s+(\w+)/g;
+  let m;while((m=re.exec(code))!==null)vars.push({w:m[1],t:'var'});return vars;
+}
+function showAC(ta){
+  const popup=document.getElementById('ac-popup'),word=getWordBefore(ta);
+  if(word.length<1){hideAC();return;}
+  const ctx=getContext(ta),userVars=getUserVars();
+  let candidates=[];
+  if(ctx==='decl')candidates=[...AC_MAP.type,...AC_MAP.keyword];
+  else if(ctx==='condition')candidates=[...AC_MAP.register,...AC_MAP.bit,...userVars,...AC_MAP.keyword];
+  else if(ctx==='assign')candidates=[...AC_MAP.register,...AC_MAP.bit,...userVars,...AC_MAP.fn];
+  else if(ctx==='start')candidates=[...AC_MAP.keyword,...AC_MAP.type,...AC_MAP.register,...AC_MAP.fn,...userVars];
+  else candidates=[...AC_MAP.register,...AC_MAP.bit,...AC_MAP.fn,...AC_MAP.keyword,...AC_MAP.type,...userVars];
+  const lw=word.toLowerCase();
+  const matches=candidates.filter((a,idx,arr)=>a.w.toLowerCase().startsWith(lw)&&a.w.toLowerCase()!==lw&&arr.findIndex(x=>x.w===a.w)===idx);
+  if(!matches.length){hideAC();return;}
+  acPrefix=word;acIdx=0;acActive=true;acFlatMatches=matches;
+  popup.innerHTML='';
+  const groups={};
+  matches.forEach(m=>{const g=m.t==='kw'?'keyword':m.t==='reg'?'register':m.t==='fn'?'fn':m.t==='bit'?'bit':m.t==='var'?'variable':'type';if(!groups[g])groups[g]=[];groups[g].push(m);});
+  let flatIdx=0;
+  Object.entries(groups).forEach(([grp,items])=>{
+    const glabel={'keyword':'Keywords','register':'Registers','fn':'Functions','bit':'Bit Fields','variable':'Variables','type':'Types'}[grp]||grp;
+    const gh=document.createElement('div');gh.className='ac-group';gh.textContent=glabel;popup.appendChild(gh);
+    items.forEach(m=>{
+      const fi=flatIdx++,d=document.createElement('div');d.className='ac-item'+(fi===0?' sel':'');d.dataset.idx=fi;
+      const dot=document.createElement('span');dot.className='ac-dot '+(m.t==='reg'?'reg':m.t==='fn'?'fn':m.t==='bit'?'bit':m.t==='var'?'var':'kw');
+      const label=document.createElement('span');label.textContent=m.w;
+      const type=document.createElement('span');type.className='ac-type';type.textContent=m.t;
+      d.append(dot,label,type);d.addEventListener('mousedown',ev=>{ev.preventDefault();insertAC(ta,m.w);});popup.appendChild(d);
+    });
+  });
+  const lineH=fz*1.65,lines=ta.value.substr(0,ta.selectionStart).split('\n');
+  const row=lines.length,col=lines[lines.length-1].length,charW=fz*0.62;
+  const lnsW=document.getElementById('lns').offsetWidth;
+  popup.style.left=(lnsW+col*charW)+'px';popup.style.top=((row-Math.floor(ta.scrollTop/lineH))*lineH+lineH+9)+'px';popup.style.display='flex';
+}
+function hideAC(){document.getElementById('ac-popup').style.display='none';acActive=false;acIdx=0;acPrefix='';acFlatMatches=[];}
+function navigateAC(dir){
+  const popup=document.getElementById('ac-popup'),items=popup.querySelectorAll('.ac-item');
+  if(!items.length)return;
+  items[acIdx].classList.remove('sel');acIdx=(acIdx+dir+items.length)%items.length;
+  items[acIdx].classList.add('sel');items[acIdx].scrollIntoView({block:'nearest'});
+}
+function insertAC(ta,word){
+  const pos=ta.selectionStart,val=ta.value,start=pos-acPrefix.length;
+  ta.value=val.slice(0,start)+word+val.slice(pos);
+  ta.selectionStart=ta.selectionEnd=start+word.length;
+  hideAC();updateLN();updateHighlight();ta.focus();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EDITOR KEYBOARD & INPUT EVENTS
+══════════════════════════════════════════════════════════════ */
+document.getElementById('ced').addEventListener('keydown',function(e){
+  if(acActive){
+    if(e.key==='ArrowDown'){e.preventDefault();navigateAC(1);return;}
+    if(e.key==='ArrowUp'){e.preventDefault();navigateAC(-1);return;}
+    if(e.key==='Escape'){hideAC();return;}
+    if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();const sel=document.getElementById('ac-popup').querySelector('.sel');if(sel){const w=sel.querySelector('span:nth-child(2)').textContent;insertAC(this,w);}return;}
+  }
+  if(e.key==='Tab'){e.preventDefault();const s=this.selectionStart,end=this.selectionEnd;this.value=this.value.slice(0,s)+'    '+this.value.slice(end);this.selectionStart=this.selectionEnd=s+4;updateLN();updateHighlight();return;}
+  if(e.key==='Enter'){
+    e.preventDefault();const pos=this.selectionStart,v=this.value;
+    const lineStart=v.lastIndexOf('\n',pos-1)+1,currentLine=v.slice(lineStart,pos);
+    validateLine(currentLine);
+    const indent=currentLine.match(/^(\s*)/)[1],extra=currentLine.trimEnd().endsWith('{')?'    ':'';
+    const insert='\n'+indent+extra;this.value=v.slice(0,pos)+insert+v.slice(pos);
+    this.selectionStart=this.selectionEnd=pos+insert.length;updateLN();updateHighlight();return;
+  }
+  if(e.key===' '&&e.ctrlKey){e.preventDefault();showAC(this);return;}
+});
+document.getElementById('ced').addEventListener('input',function(){clearErrorLines();updateLN();updateHighlight();showAC(this);});
+document.getElementById('ced').addEventListener('scroll',function(){requestAnimationFrame(syncLNScroll);hideAC();});
+document.getElementById('ced').addEventListener('blur',function(){setTimeout(hideAC,150);});
+
+/* ══════════════════════════════════════════════════════════════
+   AUTO-FIX
+══════════════════════════════════════════════════════════════ */
+function autoFix(){
+  const ta=document.getElementById('ced');let c=ta.value;
+  ['TRISA','TRISB','TRISC','TRISD','TRISE','PORTA','PORTB','PORTC','PORTD','PORTE'].forEach(r=>{c=c.replace(new RegExp('\\b'+r+'\\b','gi'),r);});
+  c=c.replace(/\b(port[abcde])\.([fF])(\d)/gi,(_,p,__,d)=>p.toUpperCase()+'.F'+d);
+  ['void','main','while','if','else','for','goto','return','int','char','unsigned'].forEach(k=>{c=c.replace(new RegExp('\\b'+k+'\\b','gi'),k);});
+  c=c.replace(/\bDelay_ms\b/gi,'Delay_ms').replace(/\bDelay_us\b/gi,'Delay_us');
+  c=c.replace(/(\w)\s*\+\+/g,'$1++').replace(/(\w)\s*--/g,'$1--');
+  ta.value=c;updateLN();updateHighlight();tlog('Auto-fix applied','ok');setStatus('Auto-fix done');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PIN TOGGLE
+══════════════════════════════════════════════════════════════ */
+function togglePin(p){
+  const isOut=((REG['TRIS'+p.port]>>p.bit)&1)===0;
+  if(isOut){tlog('BLOCKED: '+p.name+' is OUTPUT (TRIS'+p.port+'.F'+p.bit+'=0)','er');setStatus('Blocked: '+p.name+' is OUTPUT');return;}
+  const pr='PORT'+p.port;REG[pr]^=(1<<p.bit);REG[pr]&=0xFF;
+  const hi=((REG[pr]>>p.bit)&1)===1;
+  if(simWorker&&simRunning)simWorker.postMessage({type:'pin_input',port:p.port,bit:p.bit,val:hi?1:0});
+  updatePins();tlog(p.name+' toggled -> '+(hi?'HIGH (1)':'LOW (0)'),'in');setStatus(p.name+' -> '+(hi?'HIGH':'LOW'));
+}
+
+/* ══════════════════════════════════════════════════════════════
+   UPDATE PINS
+══════════════════════════════════════════════════════════════ */
+function updatePins(){
+  PINS.forEach(p=>{
+    if(p.type!=='io')return;
+    const dot=document.getElementById('pd'+p.n),dir=document.getElementById('pdir'+p.n),lk=document.getElementById('plk'+p.n);
+    if(!dot||!dir)return;
+    const isOut=((REG['TRIS'+p.port]>>p.bit)&1)===0;
+    const portReg='PORT'+p.port,readSrc=isOut?LATCH[portReg]:REG[portReg],isHi=((readSrc>>p.bit)&1)===1;
+    dot.classList.remove('oh','ih','inp','out');
+    if(isOut){dot.classList.add('out');dot.style.cursor='not-allowed';if(isHi)dot.classList.add('oh');dir.textContent=p.side==='L'?'\u2190':'\u2192';dir.style.color='var(--green)';if(lk)lk.style.display='block';}
+    else{dot.classList.add('inp');dot.style.cursor='pointer';if(isHi)dot.classList.add('ih');dir.textContent=p.side==='L'?'\u2192':'\u2190';dir.style.color='var(--blue)';if(lk)lk.style.display='none';}
+  });
+  const rp=document.getElementById('rpanel');
+  if(rp)rp.innerHTML=['A','B','C','D','E'].map(x=>`<div class="rc">TRIS${x}:${REG['TRIS'+x].toString(16).toUpperCase().padStart(2,'0')} PORT${x}:${REG['PORT'+x].toString(16).toUpperCase().padStart(2,'0')}</div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CHIP BUILDER
+══════════════════════════════════════════════════════════════ */
+function buildChip(){
+  const left=PINS.filter(p=>p.side==='L'),right=PINS.filter(p=>p.side==='R');
+  const wrap=document.getElementById('cwrap');
+  function makeCol(pins,side){
+    const col=document.createElement('div');col.className='pcol';
+    pins.forEach(p=>{
+      const row=document.createElement('div');row.className='pr '+(side==='L'?'l':'r');
+      const num=document.createElement('div');num.className='pn';num.textContent=p.n;
+      const dot=document.createElement('div');dot.className='pd';dot.id='pd'+p.n;
+      if(p.type==='pwr')dot.classList.add('pw');else if(p.type==='gnd')dot.classList.add('gn');else if(p.type==='osc')dot.classList.add('os');
+      else if(p.type==='io'){dot.title='Click to toggle (INPUT only): '+p.name;dot.addEventListener('click',()=>togglePin(p));const lk=document.createElement('i');lk.className='ti ti-lock lock';lk.id='plk'+p.n;lk.setAttribute('aria-label','output pin locked');lk.style.display='none';dot.appendChild(lk);}
+      const dir=document.createElement('div');dir.className='pdir';dir.id='pdir'+p.n;
+      const lbl=document.createElement('div');lbl.className='plbl';lbl.textContent=p.name;
+      if(side==='L')row.append(num,dot,dir,lbl);else row.append(lbl,dir,dot,num);
+      col.appendChild(row);
+    });
+    return col;
+  }
+  const chip=document.createElement('div');chip.className='chip';
+  chip.innerHTML='<div class="cnotch"></div><div class="cic">PIC</div><div class="csub">16F877A</div>';
+  wrap.append(makeCol(left,'L'),chip,makeCol(right,'R'));
+  updatePins();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SIM CONTROLS
+══════════════════════════════════════════════════════════════ */
+function setExecLock(on){isExecuting=on;document.getElementById('exec-lock').classList.toggle('on',on);}
+
+function runSim(){
+  if(simRunning||isExecuting){tlog('Simulator is already running — press Stop first','wa');setStatus('Already running');return;}
+
+  // Show analyzer pulse
+  const analyzerRow=document.getElementById('analyzer-row');
+  analyzerRow.classList.add('on');
+
+  const code=document.getElementById('ced').value;
+  tlog('Pre-Run Analyzer: scanning code...','in');
+
+  // Run static analysis
+  const errs=validateCode(code);
+  analyzerRow.classList.remove('on');
+
+  if(errs.length){
+    clearErrorLines();
+    const nums=errs.filter(e=>e.line).map(e=>e.line);
+    tlog('─── Static Analyzer found '+errs.length+' error(s) ───','er');
+    errs.forEach(e=>tlog('\u2718 '+(e.line?'[Line '+e.line+'] ':'')+e.msg,'er'));
+    if(nums.length)markErrorLines(nums);
+    setStatus('\u26D4 Errors found — fix before running');
+    return;
+  }
+
+  tlog('✔ Static Analyzer: all checks passed','ok');
+  clearErrorLines();
+
+  // Parse import blocks
+  const{defs,errors:importErrors}=parseImports(code);
+  importErrors.forEach(m=>tlog(m,'er'));
+  segDefs=defs;renderSegArea();
+  if(defs.length){
+    tlog('Found '+defs.length+' 7-segment component(s): '+defs.map(d=>d.name).join(', '),'in');
+    defs.forEach(d=>{const pinsDesc=Object.entries(d.pins).map(([s,p])=>`${s}=PORT${p.port}.F${p.bit}`).join(', ');tlog('<'+d.name+'> pins: '+pinsDesc,'in');});
+  }
+
+  simRunning=true;setExecLock(true);execVars={};hadDelay=false;
+  document.getElementById('btn-run').disabled=true;
+  document.getElementById('btn-stop').disabled=false;
+  document.getElementById('spill').classList.add('on');
+  tlog('Simulation started (Web Worker v10 Final)','in');
+  setStatus('Running...');setWkBadge(true);
+  if(!simWorker)createWorker();
+  const codeForWorker=stripImports(code);
+  simWorker.postMessage({type:'start',code:codeForWorker,reg:Object.assign({},REG),latch:Object.assign({},LATCH)});
+}
+
+function stopSim(){
+  if(simWorker&&simRunning)simWorker.postMessage({type:'stop'});
+  simRunning=false;setExecLock(false);execVars={};hadDelay=false;
+  document.getElementById('btn-run').disabled=false;
+  document.getElementById('btn-stop').disabled=true;
+  document.getElementById('spill').classList.remove('on');
+  document.getElementById('analyzer-row').classList.remove('on');
+  setWkBadge(false);
+  setStatus('Stopped');setExLine('Stopped');setExVar('\u2014');
+  tlog('Simulation stopped','wa');
+}
+
+function resetAll(){
+  stopSim();
+  Object.keys(REG).forEach(k=>REG[k]=k.startsWith('TRIS')?0xFF:0);
+  Object.keys(LATCH).forEach(k=>LATCH[k]=0);
+  segDefs.forEach(def=>{['A','B','C','D','E','F','G','DP'].forEach(seg=>{const el=document.getElementById('seg_'+def.name+'_'+seg);if(el){el.classList.remove('seg-on','seg-off');el.classList.add('seg-off');}});});
+  updatePins();clearErrorLines();
+  setStatus('Reset');setExLine('Reset');setExVar('\u2014');
+  tlog('Registers reset to defaults','wa');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESIZABLE PANELS
+══════════════════════════════════════════════════════════════ */
+(function(){
+  const vr=document.getElementById('v-resizer'),lp=document.getElementById('lpane');
+  let vDrag=false,vX=0,vW=0;
+  function startVDrag(clientX){vDrag=true;vX=clientX;vW=lp.offsetWidth;vr.classList.add('dragging');document.body.style.cssText='cursor:col-resize;user-select:none';}
+  function moveVDrag(clientX){if(!vDrag)return;const bw=document.getElementById('body').offsetWidth,nw=Math.max(240,Math.min(vW+(clientX-vX),bw-240));lp.style.width=nw+'px';lp.style.flex='none';}
+  function endVDrag(){if(!vDrag)return;vDrag=false;vr.classList.remove('dragging');document.body.style.cssText='';}
+  vr.addEventListener('mousedown',e=>{startVDrag(e.clientX);e.preventDefault();});
+  document.addEventListener('mousemove',e=>{moveVDrag(e.clientX);});
+  document.addEventListener('mouseup',endVDrag);
+  vr.addEventListener('touchstart',e=>{startVDrag(e.touches[0].clientX);},{passive:false});
+  vr.addEventListener('touchmove',e=>{e.preventDefault();moveVDrag(e.touches[0].clientX);},{passive:false});
+  vr.addEventListener('touchend',endVDrag);
+
+  const hr=document.getElementById('h-resizer'),ew=document.getElementById('ewrap'),tw=document.getElementById('twrap');
+  let hDrag=false,hY=0,hEH=0,hTH=0;
+  function startHDrag(clientY){hDrag=true;hY=clientY;hEH=ew.offsetHeight;hTH=tw.offsetHeight;hr.classList.add('dragging');document.body.style.cssText='cursor:row-resize;user-select:none';}
+  function moveHDrag(clientY){if(!hDrag)return;const dy=clientY-hY;ew.style.flex='none';ew.style.height=Math.max(80,hEH+dy)+'px';tw.style.height=Math.max(50,hTH-dy)+'px';syncLNScroll();}
+  function endHDrag(){if(!hDrag)return;hDrag=false;hr.classList.remove('dragging');document.body.style.cssText='';}
+  hr.addEventListener('mousedown',e=>{startHDrag(e.clientY);e.preventDefault();});
+  document.addEventListener('mousemove',e=>{moveHDrag(e.clientY);});
+  document.addEventListener('mouseup',endHDrag);
+  hr.addEventListener('touchstart',e=>{startHDrag(e.touches[0].clientY);},{passive:false});
+  hr.addEventListener('touchmove',e=>{e.preventDefault();moveHDrag(e.touches[0].clientY);},{passive:false});
+  hr.addEventListener('touchend',endHDrag);
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE CHIP PANEL TOGGLE
+══════════════════════════════════════════════════════════════ */
+function openMobChip(){document.getElementById('ssec').classList.add('mob-open');}
+function closeMobChip(){document.getElementById('ssec').classList.remove('mob-open');}
+
+/* ══════════════════════════════════════════════════════════════
+   DEFAULT DEMO CODE
+══════════════════════════════════════════════════════════════ */
+function loadDefaultCode(){
+  const DEFAULT=`/* PIC16F877A IDE v10 Final — KRIDISOFT
+ * 7-Segment Counter 0–9
+ * A=F0 B=F1 C=F2 D=F3 E=F4 F=F5 G=F6 DOT=F7
+ */
+import <7segment_1> {
+    A = PORTB.F0;
+    B = PORTB.F1;
+    C = PORTB.F2;
+    D = PORTB.F3;
+    E = PORTB.F4;
+    F = PORTB.F5;
+    G = PORTB.F6;
+    DP = PORTB.F7;
+}
+
+void main() {
+    TRISB = 0x00;
+
+    loop:
+
+    // 0 → A B C D E F
+    PORTB = 0b00111111;
+    Delay_ms(600);
+
+    // 1 → B C
+    PORTB = 0b00000110;
+    Delay_ms(600);
+
+    // 2 → A B D E G
+    PORTB = 0b01011011;
+    Delay_ms(600);
+
+    // 3 → A B C D G
+    PORTB = 0b01001111;
+    Delay_ms(600);
+
+    // 4 → B C F G
+    PORTB = 0b01100110;
+    Delay_ms(600);
+
+    // 5 → A C D F G
+    PORTB = 0b01101101;
+    Delay_ms(600);
+
+    // 6 → A C D E F G
+    PORTB = 0b01111101;
+    Delay_ms(600);
+
+    // 7 → A B C
+    PORTB = 0b00000111;
+    Delay_ms(600);
+
+    // 8 → A B C D E F G
+    PORTB = 0b01111111;
+    Delay_ms(600);
+
+    // 9 → A B C D F G
+    PORTB = 0b01101111;
+    Delay_ms(600);
+
+    goto loop;
+}`;
+  const ta=document.getElementById('ced');ta.value=DEFAULT;updateLN();updateHighlight();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════════ */
+buildChip();
+createWorker();
+loadDefaultCode();
+tlog('PIC16F877A IDE v10 Final — KRIDISOFT — ready','ok');
+tlog('Static Analyzer active: bracket balance · hardware limits · void main() check','ok');
+tlog('Press Run to execute — Analyzer will validate before simulation starts','in');
+</script>
+</body>
+</html>
